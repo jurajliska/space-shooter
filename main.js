@@ -21,6 +21,9 @@ var game = new Phaser.Game(config);
 let player;
 let asteroids;
 let cursors;
+let bullets;
+
+let isPress = false;
 
 function preload() {
     this.load.image("background", "assets/bg.jpg");
@@ -36,6 +39,9 @@ function create() {
     player.setCollideWorldBounds(true);
 
     asteroids = this.physics.add.group();
+    bullets = this.physics.add.group();
+
+    var bullet = bullets.create(500, 450, "bullet");
 
     var asteroid = asteroids.create(500, 20, "asteroid").setScale(0.3);
 
@@ -61,4 +67,21 @@ function update() {
     } else {
         player.setVelocityY(0);
     }
+
+    if (cursors.space.isDown) {
+        fire();
+        isPress = true;
+    } else {
+        isPress = false;
+    }
+}
+
+function fire() {
+    if( isPress === false) {
+        var bullet = bullets.create(500, 450, "bullet");
+        bullet.setVelocityY(-200);
+
+        bullet.setCollideWorldBounds(true);
+    }
+    
 }
