@@ -25,6 +25,9 @@ let bullets;
 
 let isPress = false;
 
+let asteroid;
+
+
 function preload() {
     this.load.image("background", "assets/bg.jpg");
     this.load.image("rocket", "assets/rocket.png");
@@ -41,12 +44,11 @@ function create() {
     asteroids = this.physics.add.group();
     bullets = this.physics.add.group();
 
-    var bullet = bullets.create(500, 450, "bullet");
-
-    var asteroid = asteroids.create(500, 20, "asteroid").setScale(0.3);
+    asteroid = asteroids.create(500, 10, "asteroid").setScale(0.3);
 
     cursors = this.input.keyboard.createCursorKeys();
 
+    this.physics.add.collider(bullets, asteroids, destroy, null, this);
     this.physics.add.collider(player, asteroids);
 }
 
@@ -69,19 +71,26 @@ function update() {
     }
 
     if (cursors.space.isDown) {
-        fire();
-        isPress = true;
+        if (isPress === false) {
+            fire();
+            isPress = true;
+        }
     } else {
         isPress = false;
     }
+
+    bullets.children.iterate(function (child) {
+        if (child.y < 20) {
+            child.disableBody(true, true);
+        } else return;
+    })
 }
 
 function fire() {
-    if( isPress === false) {
-        var bullet = bullets.create(500, 450, "bullet");
-        bullet.setVelocityY(-200);
+    let bullet = bullets.create(player.x, player.y - 50, "bullet");
+    bullet.setVelocityY(-300);
+}
 
-        bullet.setCollideWorldBounds(true);
-    }
+function destroy() {
     
 }
