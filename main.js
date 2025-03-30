@@ -24,8 +24,9 @@ let cursors;
 let bullets;
 
 let isPress = false;
-
-let asteroid;
+let score = 0;
+let scoreText;
+let gameOverText;
 
 
 function preload() {
@@ -44,12 +45,17 @@ function create() {
     asteroids = this.physics.add.group();
     bullets = this.physics.add.group();
 
-    asteroid = asteroids.create(500, 10, "asteroid").setScale(0.3);
+    aster = asteroids.create(500, 10, "asteroid").setScale(0.3);
+    aster.setVelocityY(70);
 
     cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.add.collider(bullets, asteroids, destroy, null, this);
-    this.physics.add.collider(player, asteroids);
+    this.physics.add.collider(player, asteroids, gameOver, null, this);
+
+    scoreText = this.add.text(20, 20, "Score: 0", {fontSize: "24px", fill: "#fff"});
+    gameOverText = this.add.text(350, 250, "Game over!", {fontSize: "64px", fill: "#fff"});
+    gameOverText.setVisible(false);
 }
 
 function update() {
@@ -91,6 +97,16 @@ function fire() {
     bullet.setVelocityY(-300);
 }
 
-function destroy() {
+function destroy(bullet, asteroid) {
+    asteroid.destroy();
+    bullet.destroy();
+
+    score += 10;
+    scoreText.setText("Score: " + score);
+}
+
+function gameOver() {
     
+
+    gameOverText.setVisible(true);
 }
