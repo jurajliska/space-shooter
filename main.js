@@ -25,6 +25,9 @@ let bullets;
 
 let isPress = false;
 let score = 0;
+let delay = 2000;
+let timedEvent;
+
 let scoreText;
 let gameOverText;
 
@@ -45,8 +48,9 @@ function create() {
     asteroids = this.physics.add.group();
     bullets = this.physics.add.group();
 
-    aster = asteroids.create(500, 10, "asteroid").setScale(0.3);
-    aster.setVelocityY(70);
+    //asteroids.create(Phaser.Math.Between(100, 900), 0, "asteroid").setScale(0.3);
+
+    timedEvent = this.time.addEvent({delay: delay, callback: createAsteroid, callbackScope: this, loop: true});
 
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -90,6 +94,19 @@ function update() {
             child.disableBody(true, true);
         } else return;
     })
+
+    asteroids.children.iterate(function (child) {
+        if (child.y > 570) {
+            child.disableBody(true, true);
+        } else return;
+    })
+
+    timedEvent.timeScale = 1 + score/100;
+}
+
+function createAsteroid() {
+    let asteroid = asteroids.create(Phaser.Math.Between(100, 900), 0, "asteroid").setScale(0.3);
+    asteroid.setVelocityY(80 + score/2);
 }
 
 function fire() {
