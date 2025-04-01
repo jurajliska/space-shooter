@@ -22,6 +22,7 @@ let player;
 let asteroids;
 let cursors;
 let bullets;
+let flame;
 
 let isPress = false;
 let score = 0;
@@ -37,6 +38,7 @@ function preload() {
     this.load.image("rocket", "assets/rocket.png");
     this.load.image("asteroid", "assets/asteroid.png");
     this.load.image("bullet", "assets/bullet.png");
+    this.load.image("flame", "assets/flame.png");
 }
 
 function create() {
@@ -44,6 +46,8 @@ function create() {
 
     player = this.physics.add.sprite(500, 500, "rocket").setScale(0.3);
     player.setCollideWorldBounds(true);
+
+    flame = this.physics.add.sprite(player.x, player.y + 50, "flame");
 
     asteroids = this.physics.add.group();
     bullets = this.physics.add.group();
@@ -54,7 +58,7 @@ function create() {
 
     cursors = this.input.keyboard.createCursorKeys();
 
-    this.physics.add.collider(bullets, asteroids, destroy, null, this);
+    this.physics.add.overlap(bullets, asteroids, destroy, null, this);
     this.physics.add.collider(player, asteroids, gameOver, null, this);
 
     scoreText = this.add.text(20, 20, "Score: 0", {fontSize: "24px", fill: "#fff"});
@@ -72,14 +76,18 @@ function update() {
         player.setVelocityX(0);
     }
     
-    if (cursors.up.isDown){
+    if (cursors.up.isDown) {
         player.setVelocityY(-200);
+        flame.setVisible(true);
     } else if (cursors.down.isDown) {
         player.setVelocityY(200);
     } else {
         player.setVelocityY(0);
+        flame.setVisible(false);
     }
 
+    flame.setPosition(player.x, player.y + 45);
+    
     if (cursors.space.isDown) {
         if (isPress === false) {
             fire();
@@ -101,12 +109,12 @@ function update() {
         } else return;
     })
 
-    timedEvent.timeScale = 1 + score/100;
+    timedEvent.timeScale = 1 + score/50;
 }
 
 function createAsteroid() {
-    let asteroid = asteroids.create(Phaser.Math.Between(100, 900), 0, "asteroid").setScale(0.3);
-    asteroid.setVelocityY(80 + score/2);
+    let asteroid = asteroids.create(Phaser.Math.Between(50, 950), 0, "asteroid").setScale(0.3);
+    asteroid.setVelocityY(100 + score/2);
 }
 
 function fire() {
@@ -123,7 +131,10 @@ function destroy(bullet, asteroid) {
 }
 
 function gameOver() {
-    
+    this.physics.pause();
+    timedEvent.paused = true;
+
+    player.setTint(0xff0000);
 
     gameOverText.setVisible(true);
 }
