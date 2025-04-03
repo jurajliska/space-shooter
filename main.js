@@ -1,3 +1,13 @@
+class BigAsteroids extends Phaser.Physics.Arcade.Sprite {
+    constructor (scene, x, y, texture) {
+        super(scene, x, y, texture);
+
+        this.damage = 0;
+    }
+
+    
+}
+
 var config = {
     type: Phaser.AUTO,
     width: 1000,
@@ -20,6 +30,7 @@ var game = new Phaser.Game(config);
 
 let player;
 let asteroids;
+let bigAsteroids;
 let cursors;
 let bullets;
 let flame;
@@ -27,7 +38,7 @@ let flame;
 let isPress = false;
 let score = 0;
 let delay = 2000;
-let timedEvent;
+let asteroidTimer;
 
 let scoreText;
 let gameOverText;
@@ -50,15 +61,22 @@ function create() {
     flame = this.physics.add.sprite(player.x, player.y + 50, "flame");
 
     asteroids = this.physics.add.group();
+    bigAsteroids = this.physics.add.group();
     bullets = this.physics.add.group();
 
-    //asteroids.create(Phaser.Math.Between(100, 900), 0, "asteroid").setScale(0.3);
+    asteroids.create(300, 20, "asteroid").setScale(0.55);
 
-    timedEvent = this.time.addEvent({delay: delay, callback: createAsteroid, callbackScope: this, loop: true});
+    let bigAsteroid = new BigAsteroids(this, 300, 300, "asteroid").setScale(0.55);
+    this.add.existing(bigAsteroid);
+    
+    bigAsteroids.add(bigAsteroid);
+
+    asteroidTimer = this.time.addEvent({delay: delay, callback: createAsteroid, callbackScope: this, loop: true});
 
     cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.add.overlap(bullets, asteroids, destroy, null, this);
+    this.physics.add.overlap(bullets, bigAsteroids, bigDestroy, null, this);
     this.physics.add.collider(player, asteroids, gameOver, null, this);
 
     scoreText = this.add.text(20, 20, "Score: 0", {fontSize: "24px", fill: "#fff"});
@@ -109,7 +127,7 @@ function update() {
         } else return;
     })
 
-    timedEvent.timeScale = 1 + score/50;
+    asteroidTimer.timeScale = 1 + score/50;
 }
 
 function createAsteroid() {
@@ -123,16 +141,28 @@ function fire() {
 }
 
 function destroy(bullet, asteroid) {
-    asteroid.destroy();
-    bullet.destroy();
+    bullet.disableBody(true, true);
+    asteroid.disableBody(true, true);
 
     score += 10;
     scoreText.setText("Score: " + score);
 }
 
+function bigDestroy(bullet, asteroid) {
+    bullet.disableBody(true, true);
+    
+    asteroid.damage++;
+    if (asteroid.damage === 3) {
+        asteroid.disableBody(true, true);
+        score += 30;
+        scoreText.setText("Score: " + score);
+    }
+    console.log(asteroid.damage);
+}
+
 function gameOver() {
     this.physics.pause();
-    timedEvent.paused = true;
+    asteroidTimer.paused = true;
 
     player.setTint(0xff0000);
 
