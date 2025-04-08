@@ -2,6 +2,9 @@ class BigAsteroids extends Phaser.Physics.Arcade.Sprite {
     constructor (scene, x, y, texture) {
         super(scene, x, y, texture);
 
+        scene.add.existing(this);
+        scene.physics.add.existing(this);
+
         this.damage = 0;
     }
 
@@ -35,10 +38,13 @@ let cursors;
 let bullets;
 let flame;
 
+let big;
+
 let isPress = false;
 let score = 0;
 let delay = 2000;
 let asteroidTimer;
+let bigAsteroidTimer;
 
 let scoreText;
 let gameOverText;
@@ -64,15 +70,14 @@ function create() {
     bigAsteroids = this.physics.add.group();
     bullets = this.physics.add.group();
 
-    asteroids.create(300, 20, "asteroid").setScale(0.55);
-
     let bigAsteroid = new BigAsteroids(this, 300, 300, "asteroid").setScale(0.55);
-    this.add.existing(bigAsteroid);
+    //this.add.existing(bigAsteroid);
     
     bigAsteroids.add(bigAsteroid);
 
     asteroidTimer = this.time.addEvent({delay: delay, callback: createAsteroid, callbackScope: this, loop: true});
-
+    bigAsteroidTimer = this.time.addEvent({delay: delay, callback: createBigAsteroid, callbackScope: this, loop: true})
+    
     cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.add.overlap(bullets, asteroids, destroy, null, this);
@@ -133,6 +138,13 @@ function update() {
 function createAsteroid() {
     let asteroid = asteroids.create(Phaser.Math.Between(50, 950), 0, "asteroid").setScale(0.3);
     asteroid.setVelocityY(100 + score/2);
+}
+
+function createBigAsteroid()  {
+    let bigAsteroid = new BigAsteroids(this, Phaser.Math.Between(50, 950), 0, "asteroid").setScale(0.55);
+    bigAsteroids.add(bigAsteroid);
+
+    bigAsteroid.setVelocityY(50 + score/2);
 }
 
 function fire() {
