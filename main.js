@@ -7,8 +7,6 @@ class BigAsteroids extends Phaser.Physics.Arcade.Sprite {
 
         this.damage = 0;
     }
-
-    
 }
 
 var config = {
@@ -37,8 +35,6 @@ let bigAsteroids;
 let cursors;
 let bullets;
 let flame;
-
-let big;
 
 let isPress = false;
 let score = 0;
@@ -69,20 +65,18 @@ function create() {
     asteroids = this.physics.add.group();
     bigAsteroids = this.physics.add.group();
     bullets = this.physics.add.group();
-
-    let bigAsteroid = new BigAsteroids(this, 300, 300, "asteroid").setScale(0.55);
-    //this.add.existing(bigAsteroid);
     
-    bigAsteroids.add(bigAsteroid);
 
     asteroidTimer = this.time.addEvent({delay: delay, callback: createAsteroid, callbackScope: this, loop: true});
-    bigAsteroidTimer = this.time.addEvent({delay: delay, callback: createBigAsteroid, callbackScope: this, loop: true})
+    bigAsteroidTimer = this.time.addEvent({delay: 5000, callback: createBigAsteroid, callbackScope: this, loop: true})
     
     cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.add.overlap(bullets, asteroids, destroy, null, this);
     this.physics.add.overlap(bullets, bigAsteroids, bigDestroy, null, this);
     this.physics.add.collider(player, asteroids, gameOver, null, this);
+    this.physics.add.collider(player, bigAsteroids, gameOver, null, this);
+    //this.physics.add.collider(asteroids, bigAsteroids);
 
     scoreText = this.add.text(20, 20, "Score: 0", {fontSize: "24px", fill: "#fff"});
     gameOverText = this.add.text(350, 250, "Game over!", {fontSize: "64px", fill: "#fff"});
@@ -132,7 +126,14 @@ function update() {
         } else return;
     })
 
+    bigAsteroids.children.iterate(function (child) {
+        if (child.y > 590) {
+            child.disableBody(true, true);
+        } else return;
+    })
+
     asteroidTimer.timeScale = 1 + score/50;
+    bigAsteroidTimer.timeScale = 1 + score/50;
 }
 
 function createAsteroid() {
@@ -144,7 +145,7 @@ function createBigAsteroid()  {
     let bigAsteroid = new BigAsteroids(this, Phaser.Math.Between(50, 950), 0, "asteroid").setScale(0.55);
     bigAsteroids.add(bigAsteroid);
 
-    bigAsteroid.setVelocityY(50 + score/2);
+    bigAsteroid.setVelocityY(50 + score/4);
 }
 
 function fire() {
@@ -169,12 +170,12 @@ function bigDestroy(bullet, asteroid) {
         score += 30;
         scoreText.setText("Score: " + score);
     }
-    console.log(asteroid.damage);
 }
 
 function gameOver() {
     this.physics.pause();
     asteroidTimer.paused = true;
+    bigAsteroidTimer.paused = true;
 
     player.setTint(0xff0000);
 
