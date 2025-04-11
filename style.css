@@ -1,0 +1,7 @@
+body {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: radial-gradient(black, 90%, rgb(70, 70, 70));
+}

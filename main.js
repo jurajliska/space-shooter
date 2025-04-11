@@ -79,7 +79,9 @@ function create() {
     //this.physics.add.collider(asteroids, bigAsteroids);
 
     scoreText = this.add.text(20, 20, "Score: 0", {fontSize: "24px", fill: "#fff"});
+    scoreText.setDepth(1);
     gameOverText = this.add.text(350, 250, "Game over!", {fontSize: "64px", fill: "#fff"});
+    gameOverText.setDepth(1);
     gameOverText.setVisible(false);
 }
 
