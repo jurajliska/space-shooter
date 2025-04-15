@@ -112,9 +112,13 @@ function update() {
             fire();
             isPress = true;
         }
-    } else {
-        isPress = false;
-    }
+    } else if (cursors.shift.isDown) {
+        if (isPress === false) {
+            restart(this.physics);
+            console.log("shift");
+            isPress = true;
+        }
+    } else isPress = false;
 
     bullets.children.iterate(function (child) {
         if (child.y < 20) {
@@ -182,4 +186,28 @@ function gameOver() {
     player.setTint(0xff0000);
 
     gameOverText.setVisible(true);
+}
+
+function restart(physics) {
+    gameOverText.setVisible(false);
+
+    player.clearTint();
+    player.setPosition(500, 500);
+
+    asteroids.children.iterate(function (child) {
+        child.disableBody(true, true);
+    });
+    bigAsteroids.children.iterate(function (child) {
+        child.disableBody(true, true);
+    });
+
+    score = 0;
+    scoreText.setText("Score: " + score);
+
+    asteroidTimer.paused = false;
+    bigAsteroidTimer.paused = false;
+    asteroidTimer.timeScale = 1;
+    bigAsteroidTimer.timeScale = 1;
+    
+    physics.resume();
 }
