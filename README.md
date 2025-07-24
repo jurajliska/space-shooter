@@ -1,2 +1,2 @@
 # Space Shooter
-Space
+Space Shooter game using Phaser JS game framework.
