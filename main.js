@@ -35,6 +35,7 @@ let bigAsteroids;
 let cursors;
 let bullets;
 let flame;
+let sound;
 
 let isPress = false;
 let score = 0;
@@ -52,6 +53,8 @@ function preload() {
     this.load.image("asteroid", "assets/asteroid.png");
     this.load.image("bullet", "assets/bullet.png");
     this.load.image("flame", "assets/flame.png");
+
+    this.load.audio("fire", "assets/shot-sound.mp3");
 }
 
 function create() {
@@ -83,6 +86,8 @@ function create() {
     gameOverText = this.add.text(350, 250, "Game over!", {fontSize: "64px", fill: "#fff"});
     gameOverText.setDepth(1);
     gameOverText.setVisible(false);
+
+    sound = this.sound.add("fire");
 }
 
 function update() {
@@ -157,6 +162,7 @@ function createBigAsteroid()  {
 function fire() {
     let bullet = bullets.create(player.x, player.y - 50, "bullet");
     bullet.setVelocityY(-300);
+    sound.play();
 }
 
 function destroy(bullet, asteroid) {
